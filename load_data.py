@@ -63,6 +63,14 @@ def init_db(conn):
 
 
 def load_data(conn):
+    """ function to load data into my database
+
+    Args:
+        conn (sqlite3.Connection): Active SQLite db connection
+
+    Returns:
+        None
+    """    
     df = pd.read_csv(CSV_PATH)
 
      # loading subjects and dropping duplicates
