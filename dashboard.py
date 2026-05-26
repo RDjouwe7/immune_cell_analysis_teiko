@@ -138,4 +138,22 @@ elif page == "Subset Analysis":
         sex_counts = pd.read_csv(f"{OUTPUT_DIR}/sex_counts.csv")
         st.dataframe(sex_counts, use_container_width=True)
 
+    st.subheader("Average B Cell Count")
+    st.markdown("Average B cell count for melanoma male responders at baseline (time=0)")
+
+    bcell_query = """
+        SELECT AVG(A.count) as avg_b_cell_count
+        FROM cell_counts A
+        JOIN samples B ON A.sample = B.sample
+        JOIN subjects C ON B.subject = C.subject
+        WHERE C.condition = 'melanoma'
+        AND C.sex = 'M'
+        AND B.sample_type = 'PBMC'
+        AND B.time_from_treatment_start = 0
+        AND B.response = 'yes'
+        AND A.population = 'b_cell'
+    """
+    avg_bcell = pd.read_sql_query(bcell_query, conn)
+    st.metric("Average B Cell Count", round(avg_bcell["avg_b_cell_count"].values[0],2))
+
     conn.close()
