@@ -105,6 +105,9 @@ def load_data(conn):
 
 if __name__ == "__main__":
 
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+
     conn = sqlite3.connect(DB_PATH)
     init_db(conn)
     load_data(conn)
