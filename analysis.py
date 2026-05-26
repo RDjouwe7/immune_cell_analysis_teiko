@@ -134,7 +134,7 @@ def subset_analysis(conn):
 
     Args:
         conn (sqlite3.Connection): Active SQLite database connection.
-        
+
     Returns:
         tuple:
             - sample_per_project (pandas.DataFrame): Sample counts per project
@@ -189,6 +189,23 @@ def subset_analysis(conn):
     samples_per_project.to_csv(f"{OUTPUT_DIR}/samples_per_project.csv", index=False)
     response_counts.to_csv(f"{OUTPUT_DIR}/response_counts.csv", index=False)
     sex_counts.to_csv(f"{OUTPUT_DIR}/sex_counts.csv", index=False)
+
+    #getting the average number of B cells for responders at baseline (melanoma males) but just printing  it
+    bcell_query = """
+        SELECT AVG(A.count) as avg_b_cell_count
+        FROM cell_counts A
+        JOIN samples B ON A.sample = B.sample
+        JOIN subjects C ON B.subject = C.subject
+        WHERE C.condition = 'melanoma'
+        AND C.sex = 'M'
+        AND B.sample_type = 'PBMC'
+        AND B.time_from_treatment_start = 0
+        AND B.response = 'yes'
+        AND A.population = 'b_cell'
+    """
+    avg_bcell = pd.read_sql_query(bcell_query, conn)
+    avg_bcell_value = round(avg_bcell["avg_b_cell_count"].values[0], 2)
+    print(f"\nAverage B cell count for male melanoma responders at baseline: {avg_bcell_value}")
 
 
     return samples_per_project, response_counts, sex_counts
