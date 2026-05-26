@@ -54,7 +54,7 @@ def init_db(conn):
             sample   TEXT,
             population  TEXT,
             count       INTEGER,
-            FOREIGN KEY (sample_id) REFERENCES samples(sample_id)
+            FOREIGN KEY (sample) REFERENCES samples(sample)
         )
     """)
 
